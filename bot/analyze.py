@@ -11,12 +11,9 @@ def throttle(f):
     def wrapper(*args):
         user_id = args[0]
         now = get_unixtime()
-        print('Check throttle')
         if user_id in throttle_dict:
             if now - throttle_dict[user_id] < 660:
-                print('Answer throttled')
                 return 'ok'
-        print('func f called')
         f(*args)
 
     return wrapper

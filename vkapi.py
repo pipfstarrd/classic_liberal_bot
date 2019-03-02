@@ -3,7 +3,6 @@ import vk.exceptions
 import requests
 import json
 import settings
-import logging
 from threading import Timer
 
 
@@ -63,7 +62,6 @@ def send_message(user_id, token, message, path_to_img):
 
     try:
         if messages_count[user_id]['count'] == 98:
-            print('Скоро должна произойти ошибка')
             send_message(user_id, token, 'Извиняюсь, флуд-контроль ВКонтакте не дает нашему боту отправлять вам такое\
             количество сообщений :(\n\n Наш бот сообщит вам, когда сможет продолжить задавать вопросы.', '')
             messages_count[user_id] = {'count': 1, 'date': settings.get_unixtime()}
@@ -77,14 +75,7 @@ def send_message(user_id, token, message, path_to_img):
                           attachment=attachment,
                           keyboard=keyboard)
 
-        print('Отправил юзеру {} сообщение №{}'.format(user_id, messages_count[user_id]))
     except vk.exceptions.VkAPIError:
-        print('Произошла ошибка')
-        print('Ошибка у юзера {} в оообщении под номером {}'.format(user_id, messages_count[user_id]))
-
-        logging.basicConfig(filename='bot/logs/logfile.txt')
-        logger = logging.getLogger('vk-api')
-        logger.error('\n\nПроизошла ошибка в api ВКонтакте!\n\n')
         return 'error'                                            # bot can not send >100 msg/hour to 1 user
 
     return 'ok'

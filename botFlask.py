@@ -1,4 +1,3 @@
-import logging
 from flask import Flask, request, json
 from flask_sqlalchemy import SQLAlchemy
 
@@ -23,10 +22,6 @@ def processing():
         msg_from_user = data['text']
         timestamp = data['date']
 
-        logging.basicConfig(filename='bot/logs/logfile.txt', level=logging.INFO)
-        werkzeug = logging.getLogger('werkzeug')
-        werkzeug.setLevel(logging.ERROR)
-
 
         # we ignoring vk server repeated messages
         if not analyze.is_valid_timestamp(user_id, timestamp):
@@ -38,8 +33,6 @@ def processing():
         elif msg_from_user == settings.btn_restart or msg_from_user == settings.cmd_restart:
             analyze.go_to_start(user_id)
         elif points is not None:
-            logging.info('Пользователь {} ответил на вопрос, заданный модулем survay: "{}"'\
-                         .format(user_id, msg_from_user))
             analyze.process(user_id, points)
         else:
             analyze.touch(user_id)

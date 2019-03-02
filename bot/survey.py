@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from models import db, User, Category
 import settings
-import logging
 
 
 class EndOfTest(Exception):
@@ -16,8 +15,6 @@ class Survey:
         self.newborn = False
         self.last_timestamp = -1
         self.id = user_id
-        logging.basicConfig(filename='logs/logfile.txt')
-        self.logger = logging.getLogger('survay')
 
         if self.user is None:
             self.newborn = True
@@ -34,8 +31,6 @@ class Survey:
 
     def results(self):
         d = {c.name: c.points for c in self.user.categories}
-        self.logger.info('\n\n\nВывод всех ответов пользователя с id {} по группам {}\n\nКОНЕЦ ОПРОСА\n\n\n'\
-                         .format(self.id, d))
         return d
 
     def category(self) -> Category:
@@ -60,8 +55,6 @@ class Survey:
 
     def change_points(self, value):
         self.category().points_history[self.user.category_index][self.user.position] = value
-        self.logger.info('Преобразовал данный пользователем {} ответ в число "{}" и записал в базу данных\n\n'\
-                         .format(self.id, value))
         self.category().points = sum(self.category().points_history[self.user.category_index])
         db.session.commit()
 
@@ -99,9 +92,6 @@ class Survey:
 
         question += category[self.user.position]
 
-        self.logger.info('Задал пользоателю {} вопрос "{}", взятый из списка вопросов в модуле settigs'\
-                         .format(self.id, category[self.user.position]))
-
         return question
 
     def step_category(self, backward=False):
@@ -109,11 +99,6 @@ class Survey:
             raise EndOfTest
         if self.user.category_index == 0 and backward:
             return self.category()
-        if not backward:
-            self.logger.info('\n\nОбщее количество поинтов пользователя {} за раздел {} равняется {}\n\n'\
-                             .format(self.id, self.category().name, self.category().points))
-            self.logger.info('История ответов пользователя {} на вопросы в разделе {}: {}\n\n'\
-                             .format(self.id, self.category().name, self.category().points_history[self.user.category_index]))
 
         self.user.category_index += -1 if backward else 1
         quest_num = len(settings.quest_text[self.user.category_index])
