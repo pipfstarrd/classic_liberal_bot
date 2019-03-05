@@ -25,6 +25,7 @@ bot/logs/
 *.egg-info/
 .installed.cfg
 *.egg
+*.open
 MANIFEST
 
 # PyInstaller

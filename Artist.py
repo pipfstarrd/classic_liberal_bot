@@ -195,4 +195,5 @@ class Artist:
                         font=_indic.font_percents)
         self._draw.text((right_text_x0, text_y0), "{}%".format(percent_right), self._COLOUR_WHITE,
                         font=_indic.font_percents)
+
         return
