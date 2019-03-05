@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from bot.survey import Survey, EndOfTest, db
+from bot.survey import Survey, EndOfTest
 from messageHandler import create_answer
 from Artist import Artist
 from settings import get_unixtime
@@ -14,6 +14,7 @@ def throttle(f):
         if user_id in throttle_dict:
             if now - throttle_dict[user_id] < 660:
                 return 'ok'
+
         f(*args)
 
     return wrapper
@@ -23,7 +24,7 @@ def touch(user_id, send=True):
     "Init a survey or do nothing"
     survey = Survey(user_id)
     if survey.newborn:
-        return process(user_id, send=send)  # ask the first question
+        return process(user_id, 0, send)  # ask the first question
 
 
 @throttle
@@ -63,8 +64,8 @@ def go_back(user_id, send=True):
 
 def go_to_start(user_id, send=True):
     survey = Survey(user_id)
-    survey.user.position = -1                               # position automatically increment after step_question
-    survey.user.category_index = 0                          # add we get the 1st question
+    survey.cleanup()
+    survey = Survey(user_id)
     question = survey.step_question()
     if send:
         create_answer(user_id, question)

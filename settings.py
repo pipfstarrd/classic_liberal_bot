@@ -2,10 +2,10 @@ import os.path as os_path
 import time
 
 # Community access token for vk
-token = 'mytoken'
+token = 'my_token'
 
 # Callback API confirmation code
-confirmation_token = 'code'
+confirmation_token = 'confirmation_code'
 
 # ID of the VKontakte group in which the bot is running
 group_id = 177014127

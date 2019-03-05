@@ -42,7 +42,7 @@ keyboard = json.dumps(keyboard, ensure_ascii=False).encode('utf-8')
 def send_message(user_id, token, message, path_to_img):
 
     if user_id in messages_count:
-        if settings.get_unixtime() - messages_count[user_id]['date'] < 660:
+        if settings.get_unixtime() - messages_count[user_id]['date'] < 3660:
             messages_count[user_id]['count'] += 1
         else:
             messages_count[user_id] = {'count': 1, 'date': settings.get_unixtime()}

@@ -1,9 +1,6 @@
 from flask import Flask, request, json
-from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite://"
-db = SQLAlchemy(app)
 
 import settings
 from bot import analyze
@@ -22,8 +19,7 @@ def processing():
         msg_from_user = data['text']
         timestamp = data['date']
 
-
-        # we ignoring vk server repeated messages
+        #  We ignoring vk server repeated messages
         if not analyze.is_valid_timestamp(user_id, timestamp):
             return 'ok'
 

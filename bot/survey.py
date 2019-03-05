@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
-from models import db, User, Category
+from models import User
 import settings
+
+user_list = {}
 
 
 class EndOfTest(Exception):
@@ -11,69 +13,51 @@ class Survey:
 
     def __init__(self, user_id):
         # get corresponding user or create it
-        self.user = db.session.query(User).get(user_id)
+        self.user = user_list.get(user_id)
         self.newborn = False
         self.last_timestamp = -1
         self.id = user_id
 
         if self.user is None:
             self.newborn = True
-            self.user = User(user_id)
-            db.session.add(self.user)
-            db.session.commit()
+            self.user = User()
+            user_list[user_id] = self.user
 
     def cleanup(self):
-
-        for c in self.user.categories:
-            db.session.delete(c)
-        db.session.delete(self.user)
-        db.session.commit()
+        del user_list[self.id]
 
     def results(self):
-        d = {c.name: c.points for c in self.user.categories}
-        return d
-
-    def category(self) -> Category:
-        category = db.session.query(Category).\
-                              filter(Category.user == self.user).\
-                              filter(Category.index == self.user.category_index).\
-                              first()
-
-        if category is None:
-            index = self.user.category_index
-            cat_name = ""
-            for k in settings.categories.keys():
-                if settings.categories[k][2] == index:
-                    cat_name = k
-                    break
-
-            category = Category(user=self.user, index=index,
-                                name=cat_name)
-            db.session.add(category)
-            db.session.commit()
-        return category
+        return {c: self.user.user_stats[c]['points'] for c in self.user.user_stats}
 
     def change_points(self, value):
-        self.category().points_history[self.user.category_index][self.user.position] = value
-        self.category().points = sum(self.category().points_history[self.user.category_index])
-        db.session.commit()
+        if self.user.step[1] >= 0:
+            self.user.change_points(value)
 
     def step_question(self, backward=False):
         """Raises EndOfTest if there is no more questions"""
         question = ''
-        category = settings.quest_text[self.category().index]       # get list of questions for user`s current category
         step = -1 if backward else 1                                # step to forward or backward
 
-        if (self.user.position+step == len(category)
-                or self.user.position+step < 0):
-            category = settings.quest_text[self.step_category(backward).index]
-        else:
-            self.user.position += step
-        db.session.commit()
+        if self.user.step[1]+step == settings.categories[self.user.current_category][1]:
+            if self.user.step[0] == len(settings.quest_text) - 1:
+                raise EndOfTest
+            else:
+                self.user.next_category()
 
-        if self.user.position == 0:
+        elif self.user.step[1]+step < 0:
+            if self.user.step[0] == 0:
+                return 'Это первый вопрос. Назад отмотать нельзя.'
+            else:
+                self.user.prev_category()
+        else:
+            if not backward:
+                self.user.next_question()
+            else:
+                self.user.prev_question()
+
+        if self.user.step[1] == 0:
             # add instruction for users
-            if self.category().index == 0:
+            if self.user.step[0] == 0:
                 question += "Для прохождения теста используйте кнопки или команды-числа:\n" \
                            "\n" \
                            "{:>3} - {}".format(settings.cmd_absolutely_yes, settings.btn_absolutely_yes) + "\n" \
@@ -87,22 +71,9 @@ class Survey:
             # add user-friendly headers for each category (only in firsts questions)
             question += "#{}\n" \
                         "Количество вопросов: {} шт\n" \
-                        "\n".format(settings.categories[self.category().name][3].replace(' ', '_'),
-                                    settings.categories[self.category().name][1])
+                        "\n".format(settings.categories[self.user.current_category][3].replace(' ', '_'),
+                                    settings.categories[self.user.current_category][1])
 
-        question += category[self.user.position]
+        question += settings.quest_text[self.user.step[0]][self.user.step[1]]
 
         return question
-
-    def step_category(self, backward=False):
-        if self.user.category_index == len(settings.quest_text)-1 and not backward:
-            raise EndOfTest
-        if self.user.category_index == 0 and backward:
-            return self.category()
-
-        self.user.category_index += -1 if backward else 1
-        quest_num = len(settings.quest_text[self.user.category_index])
-        self.user.position = quest_num-1 if backward else 0
-        db.session.commit()
-        return self.category()
-
