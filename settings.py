@@ -63,15 +63,15 @@ def msg_to_points(msg_from_user):
     return {
         # buttons
         btn_absolutely_yes: 1,
-        btn_probably_yes: 0.5,
+        btn_probably_yes: 0.7,
         btn_idk: 0,
-        btn_probably_no: -0.5,
+        btn_probably_no: -0.7,
         btn_absolutely_no: -1,
         # commands
         cmd_absolutely_yes: 1,
-        cmd_probably_yes: 0.5,
+        cmd_probably_yes: 0.7,
         cmd_idk: 0,
-        cmd_probably_no: -0.5,
+        cmd_probably_no: -0.7,
         cmd_absolutely_no: -1
     }.get(msg_from_user)
 
