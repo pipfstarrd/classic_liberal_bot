@@ -9,8 +9,10 @@ from bot import analyze
 @app.route('/', methods=['POST'])
 def processing():
     data = json.loads(request.data)
-    if 'type' not in data.keys():
+    if 'type' not in data.keys() or 'secret' not in data.keys():
         return 'not vk'
+    if data['secret'] != settings.secret_key:
+        return
     if data['type'] == 'confirmation':
         return settings.confirmation_token
     if data['type'] == 'message_new':
