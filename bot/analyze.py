@@ -62,6 +62,7 @@ def go_back(user_id, send=True):
     return question, survey.user
 
 
+@throttle
 def go_to_start(user_id, send=True):
     survey = Survey(user_id)
     survey.cleanup()
