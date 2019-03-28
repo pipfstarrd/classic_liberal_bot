@@ -61,6 +61,9 @@ class Artist:
         e = "economic"
         a = "social"
         n = "national"
+        s = "scientism"
+        ec = "ecological"
+        r = "revolution"
 
         # compute left percent
         for k in dict_of_points.keys():
@@ -87,8 +90,24 @@ class Artist:
                 continue
 
             # check edges of national category
-            if i[3] is not None and ((100 - dict_of_results[n]) < i[3][0] or (100 - dict_of_results[n]) > i[3][1]):
-                continue
+            if len(i) == 4:
+                if 100 - dict_of_results[n] < i[3][0] or 100 - dict_of_results[n] > i[3][1]:
+                    continue
+
+            # check edges of scientism category
+            if len(i) == 5:
+                if 100 - dict_of_results[s] < i[4][0] or 100 - dict_of_results[s] > i[4][1]:
+                    continue
+
+            # check edges of ecological category
+            if len(i) == 6:
+                if dict_of_results[ec] < i[5][0] or dict_of_results[ec] > i[5][1]:
+                    continue
+
+            # check edges of revolution category
+            if len(i) == 7:
+                if dict_of_results[r] < i[6][0] or dict_of_results[r] > i[6][1]:
+                    continue
 
             label = i[0]
             break
@@ -195,5 +214,4 @@ class Artist:
                         font=_indic.font_percents)
         self._draw.text((right_text_x0, text_y0), "{}%".format(percent_right), self._COLOUR_WHITE,
                         font=_indic.font_percents)
-
         return
