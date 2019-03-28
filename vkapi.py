@@ -76,6 +76,7 @@ def send_message(user_id, token, message, path_to_img):
                           keyboard=keyboard)
 
     except vk.exceptions.VkAPIError:
+        Timer(660.0, send_message, [user_id, token, excuse, path_to_img]).start()
         return 'error'                                            # bot can not send >100 msg/hour to 1 user
 
     return 'ok'
