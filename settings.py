@@ -2,13 +2,16 @@ import os.path as os_path
 import time
 
 # Community access token for vk
-token = 'my_token'
+token = 'group token'
 
 # Callback API confirmation code
-confirmation_token = 'confirmation_code'
+confirmation_token = 'group confirmation token'
+
+# Key to confirm the sender of the data
+secret_key = 'group secret key'
 
 # ID of the VKontakte group in which the bot is running
-group_id = 177014127
+group_id = 146469497
 
 # Location of categoryname.txt files containing questions
 path_fonts = "bot/fonts"
@@ -79,4 +82,3 @@ def msg_to_points(msg_from_user):
 # Return current timestamp converted to unixtime
 def get_unixtime():
     return int(time.time())
-
