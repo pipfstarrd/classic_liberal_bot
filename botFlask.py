@@ -28,7 +28,7 @@ def processing():
         points = settings.msg_to_points(msg_from_user)
         if msg_from_user == settings.btn_back or msg_from_user == settings.cmd_back:
             analyze.go_back(user_id)
-        elif msg_from_user == settings.btn_restart or msg_from_user == settings.cmd_restart:
+        elif msg_from_user in [settings.btn_restart, settings.cmd_restart, settings.btn_start]:
             analyze.go_to_start(user_id)
         elif points is not None:
             analyze.process(user_id, points)
